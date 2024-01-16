@@ -34,13 +34,16 @@ public class Escopeta : MonoBehaviour
 
     public int totalBalasEnDisparo;
 
-    
+    public GameObject Ak_47;
+
+    private audioManagement audioManagement;
 
     // Start is called before the first frame update
     void Start()
     {
         MovimientoPersonaje = GetComponent<MovimientoPersonaje>();
         MovimientoPersonaje = FindObjectOfType<MovimientoPersonaje>();
+        audioManagement = FindObjectOfType<audioManagement>();
     }
 
     // Update is called once per frame
@@ -49,6 +52,8 @@ public class Escopeta : MonoBehaviour
         if(cantidadBalasDesactivar <= contadorBalasDesactivar){
             gameObject.SetActive(false);
             contadorBalasDesactivar = 0;
+            Ak_47.SetActive(true);
+            audioManagement.seleccionAudio(18, 0.2f);
         }
         
         Pivote.transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -84,6 +89,7 @@ public class Escopeta : MonoBehaviour
 
     void DisparoRafaga(){
         if (Time.time >= nextFireTime){
+            audioManagement.seleccionAudio(7, 0.2f);
             for(int i = 0; i < totalBalasEnDisparo; i++)
         {
             float tiempoDeEsperaAleatorio = Random.Range(-0.08f, 0.08f);
@@ -102,9 +108,14 @@ public class Escopeta : MonoBehaviour
     yield return new WaitForSeconds(tiempoDeEsperaAleatorio);
     GameObject proyectilInstanciado = Instantiate (Proyectil, Arma.position + new Vector3(Random.Range(0f, 0.8f), Random.Range(-0.1f, 0.1f), 0), transform.rotation) as GameObject;
     var angle = Mathf.Atan2(targetRotation.y, targetRotation.x) * Mathf.Rad2Deg;
+    Vector3 mousePosition = Input.mousePosition;
+    mousePosition.z = 0f; // Ajusta la distancia de la cámara al plano del juego si es necesario
     targetRotation.z = 0;
+    Vector3 targetPosition = Camera.main.ScreenToWorldPoint(mousePosition);
     Vector2 dispersionVector = Quaternion.AngleAxis(Random.Range(-dispersion, dispersion), Vector3.forward) * objetivo;
-    objetivo = (targetRotation - transform.position).normalized;
+    
+    objetivo = (targetPosition - transform.position);
     proyectilInstanciado.GetComponent<Rigidbody2D>().AddForce(dispersionVector * velocidadProyectil, ForceMode2D.Impulse);
+    
 }
 }

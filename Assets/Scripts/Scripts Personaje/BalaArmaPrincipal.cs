@@ -11,7 +11,7 @@ public class BalaArmaPrincipal : MonoBehaviour
         GameObject objetoAIgnorar = GameObject.FindGameObjectWithTag("Player");
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
         Physics2D.IgnoreCollision(boxCollider, objetoAIgnorar.GetComponent<BoxCollider2D>());
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, 0.5f);
     }
 
     // Update is called once per frame
@@ -35,7 +35,7 @@ public class BalaArmaPrincipal : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
-
+        
     }
 
     

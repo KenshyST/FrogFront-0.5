@@ -5,9 +5,10 @@ using UnityEngine;
 public class Trampolin : MonoBehaviour
 {
      public float FuerzaEmpuje = 10f;
+     private audioManagement audioManagement;
     void Start()
     {
-        
+        audioManagement = FindObjectOfType<audioManagement>();
     }
 
     // Update is called once per frame
@@ -22,6 +23,7 @@ public class Trampolin : MonoBehaviour
         {
             Vector3 contactPoint = collision.transform.position; 
             Vector3 direction = (contactPoint - transform.position).normalized;
+            audioManagement.seleccionAudio(12, 0.15f);
             collision.gameObject.GetComponent<Rigidbody2D>().AddForceAtPosition(direction * FuerzaEmpuje, contactPoint); // Aplica la fuerza en el punto de contacto
         }
     }

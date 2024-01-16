@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 3832704973636243530}
   - component: {fileID: -3667441465435423935}
   - component: {fileID: 1296083978705333391}
-  m_Layer: 0
+  - component: {fileID: 7778382827758223224}
+  m_Layer: 8
   m_Name: Pluma Escudo
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -150,6 +151,10 @@ MonoBehaviour:
   fragmentoPrefab: []
   contadorBalas: 6
   balasColisionadasActualmente: 0
+  spriteObjectPrefab: {fileID: 5992617437409728277, guid: 70f8f871ce62dba45b2859afcb685772, type: 3}
+  tiempoAparicion: 0.2
+  tiempoDifuminado: 0.1
+  reproducirSonido: 0
   tienePedazos: 0
 --- !u!114 &1296083978705333391
 MonoBehaviour:
@@ -163,3 +168,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2240b48cac1294e43b3b80c034aa3915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  destruirAlAparecer: 1
+--- !u!114 &7778382827758223224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6558297225581696507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07e2d81d0ada22247a277755356de200, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: 
+  healthPoints: 0
+  speed: 0
+  DamageToGive: 10

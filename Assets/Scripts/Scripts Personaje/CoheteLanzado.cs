@@ -13,6 +13,8 @@ public class CoheteLanzado : MonoBehaviour
     public Camera camara;
 
     public float tiempoDestruccion = 3f;
+
+    public string projectileName = "Projectile";
     
     
     void Start()
@@ -23,6 +25,8 @@ public class CoheteLanzado : MonoBehaviour
         Rigidbody2D rbProyectil = GetComponent<Rigidbody2D>();
         rbProyectil.velocity *= 0.3f;
         Destroy(gameObject, tiempoDestruccion);
+         // Buscar el prefab con el nombre "Projectile"
+        GameObject projectilePrefab = Resources.Load<GameObject>(projectileName);
         
     }
 
@@ -81,12 +85,16 @@ public class CoheteLanzado : MonoBehaviour
         // Se recorren todos los enemigos y se busca el más cercano
         foreach (GameObject enemigo in enemigos)
         {
-            float distancia = Vector2.Distance(transform.position, enemigo.transform.position);
+            
 
-            if (distancia < distanciaMinima)
+            if (enemigo.name.Contains("ShootingEnemy") || (enemigo.name.Contains("Personaje") && (enemigo.gameObject.tag =="Player")))
             {
-                distanciaMinima = distancia;
-                enemigoCercano = enemigo;
+                float distancia = Vector2.Distance(transform.position, enemigo.transform.position);
+                if (distancia < distanciaMinima)
+                {
+                    distanciaMinima = distancia;
+                    enemigoCercano = enemigo;
+                }
             }
         }
 

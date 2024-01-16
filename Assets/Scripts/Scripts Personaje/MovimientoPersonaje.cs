@@ -28,6 +28,12 @@ public class MovimientoPersonaje : MonoBehaviour
     public float Healt;
     public bool isInmune;
 
+    //PANTALLA MUERTE
+    public GameObject pantallaMuerte;
+
+    //tipos de muerte
+    public bool cayoEnVeneno;
+
     // Parte para el Salto:
     [Header("Salto")]
 
@@ -86,7 +92,21 @@ public class MovimientoPersonaje : MonoBehaviour
 
     bool EnPegajoso;
 
-    private Vector3 respawnPoint;
+    public Vector3 respawnPoint;
+
+    public GameObject Ak_47;
+
+    public GameObject Escopeta;
+
+    public GameObject lanzacohetes;
+
+    private audioManagement audioManagement;
+
+    public float fireRate = 0.4f;
+
+    private float nextFireTime = 0f;
+
+    public LayerMask capaObjetivo;
 
 
     private void Start()
@@ -110,17 +130,20 @@ public class MovimientoPersonaje : MonoBehaviour
         // Establecer la posición del jugador al punto de inicio
         transform.position = respawnPoint;
 
+        audioManagement = FindObjectOfType<audioManagement>();
 
     }
 
     // Update is called once per frame
     private void Update()
     {
-        // Reiniciar la escena con la tecla }, para pruebas con el checkpoint XD
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if(Healt > 60){
+            Healt = 60;
         }
+        if(Healt < 0){
+            Healt = 0;
+        }
+        
 
         //check de corazones
         HealthCheck();
@@ -190,9 +213,16 @@ public class MovimientoPersonaje : MonoBehaviour
                 // Se detectó una sola pulsación en la tecla "S"
                 waitingForDoubleTap = true;
                 lastTapTime = Time.time;
+                
             }
 
 
+        }
+        if(Input.GetKey(KeyCode.A)){
+            if (Time.time >= nextFireTime && enSuelo){
+                audioManagement.seleccionAudio(0, 0.18f);
+                nextFireTime = Time.time + fireRate;
+        }
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
@@ -201,14 +231,22 @@ public class MovimientoPersonaje : MonoBehaviour
                 // Se detectó un doble tap en la tecla "S"
                 rgb2D.AddForce(Vector2.right * fuerzaDash, ForceMode2D.Impulse);
                 waitingForDoubleTap = false;
+                
             }
             else
             {
                 // Se detectó una sola pulsación en la tecla "S"
                 waitingForDoubleTap = true;
                 lastTapTime = Time.time;
+                
             }
 
+        }
+        if(Input.GetKey(KeyCode.D)){
+            if (Time.time >= nextFireTime && enSuelo){
+                audioManagement.seleccionAudio(0, 0.15f);
+                nextFireTime = Time.time + fireRate;
+        }
         }
 
         if (Input.GetKeyDown(KeyCode.W))
@@ -232,7 +270,9 @@ public class MovimientoPersonaje : MonoBehaviour
 
         }
 
+        
 
+        
 
     }
 
@@ -250,6 +290,20 @@ public class MovimientoPersonaje : MonoBehaviour
         LogicaMovimiento(movimientoHorizontal * Time.fixedDeltaTime);
 
         EstaSaltando = false;
+
+        if (cayoEnVeneno)
+        {
+            caeEnVeneno();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
+
+        if (Healt == 0f)
+        {
+            health0();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -257,6 +311,29 @@ public class MovimientoPersonaje : MonoBehaviour
         if (collision.gameObject)
         {
             haSaltado = false;
+        }
+        if(collision.gameObject.tag == "botiquin"){
+            Healt += 20;
+            audioManagement.seleccionAudio(10, 0.15f);
+            Destroy(collision.gameObject);
+        }
+
+        if(collision.gameObject.tag == "escopeta"){
+            Ak_47.SetActive(false);
+            lanzacohetes.SetActive(false);
+            Escopeta.SetActive(true);
+            audioManagement.seleccionAudio(16, 0.2f);
+            Destroy(collision.gameObject);
+
+        }
+
+        if(collision.gameObject.tag == "lanzacohetes"){
+            Ak_47.SetActive(false);
+            Escopeta.SetActive(false);
+            lanzacohetes.SetActive(true);
+            audioManagement.seleccionAudio(17, 0.2f);
+            Destroy(collision.gameObject);
+
         }
 
 
@@ -269,7 +346,12 @@ public class MovimientoPersonaje : MonoBehaviour
         if (other.CompareTag("Enemy") && !isInmune)
         {
             Healt -= other.GetComponent<Enemy>().DamageToGive;
-            Destroy(other.gameObject);
+            audioManagement.seleccionAudio(11, 0.3f);
+
+            if (capaObjetivo == (capaObjetivo | (1 << other.gameObject.layer))){
+                Destroy(other.gameObject);
+            }
+            
             StartCoroutine(Inmunity());
 
             if (other.transform.position.x > transform.position.x)
@@ -298,6 +380,7 @@ public class MovimientoPersonaje : MonoBehaviour
 
         if (other.gameObject.tag == "checkpoint") // Aquí puedes cambiar la etiqueta para que se destruya la caja con otro objeto
         {
+            audioManagement.seleccionAudio(13, 0.3f);
             PlayerPrefs.SetFloat("spawnPersonajeX", transform.position.x);
             PlayerPrefs.SetFloat("spawnPersonajeY", transform.position.y);
             PlayerPrefs.SetFloat("spawnPersonajeZ", transform.position.z);
@@ -319,12 +402,19 @@ public class MovimientoPersonaje : MonoBehaviour
 
         if (other.gameObject.tag == "liquido")
         {
+            audioManagement.seleccionAudio(14, 0.18f);
             estaEnAgua = true;
             fuerzaDeSalto -= 4;
         }
         else
         {
             return;
+        }
+
+        if(other.gameObject.tag == "botiquin"){
+            Healt += 20;
+            
+            Destroy(other.gameObject);
         }
 
     }
@@ -342,15 +432,31 @@ public class MovimientoPersonaje : MonoBehaviour
             EnPegajoso = true;
 
 
-
+        if(other.gameObject.tag == "botiquin"){
+            Debug.Log("Entro");
+            Healt += 20;
+            Destroy(other.gameObject);
+        }
 
         }
 
         if (other.gameObject.tag == "liquido")
         {
             estaEnAgua = true;
+            if (Time.time >= nextFireTime){
+                audioManagement.seleccionAudio(19, 0.25f);
+                nextFireTime = Time.time + fireRate;
+        }
 
         }
+
+        if (other.gameObject.tag == "veneno")
+        {
+            cayoEnVeneno = true;
+            estaEnAgua = true;
+            
+        }
+        
     }
 
 
@@ -358,7 +464,8 @@ public class MovimientoPersonaje : MonoBehaviour
     {
         if (other.gameObject.tag == "PlataforMovil") // Aquí puedes cambiar la etiqueta para que se destruya la caja con otro objeto
         {
-            transform.parent = null;
+                transform.parent = null;
+            
 
         }
 
@@ -389,9 +496,11 @@ public class MovimientoPersonaje : MonoBehaviour
         float movimientoFinal = Mathf.Pow(Mathf.Abs(diferenciaVelocidad) * ratioAceleracion, intensidadAceleracion) * Mathf.Sign(diferenciaVelocidad);
         rgb2D.AddForce(movimientoFinal * Vector2.right);
         //Friccion artificial hay dio mio
+        
 
         if (enSuelo && Input.GetButtonUp("Horizontal"))
         {
+
             float cantidadFriccion = Mathf.Min(Mathf.Abs(rgb2D.velocity.x), Mathf.Abs(velocidadMovimiento * 0.2f));
             cantidadFriccion *= Mathf.Sign(rgb2D.velocity.x);
             rgb2D.AddForce(Vector2.right * -cantidadFriccion, ForceMode2D.Impulse);
@@ -423,6 +532,7 @@ public class MovimientoPersonaje : MonoBehaviour
         {
             rgb2D.gravityScale = escalaGravedad;
         }
+        
 
 
     }
@@ -459,6 +569,7 @@ public class MovimientoPersonaje : MonoBehaviour
     private void RealizarSalto()
     {
         haSaltado = true;
+        audioManagement.seleccionAudio(3, 0.08f);
         rgb2D.AddForce(Vector2.up * fuerzaDeSalto, ForceMode2D.Impulse);
         inputSaltoSoltado = false;
 
@@ -486,5 +597,30 @@ public class MovimientoPersonaje : MonoBehaviour
             vidasPersonaje = 0;
             //AQUI MUERE
         }
+    }
+
+    public void caeEnVeneno()
+    {
+        if (cayoEnVeneno)
+        {
+            Healt = 0;
+            pantallaMuerte.SetActive(true);
+            Time.timeScale = 0f;
+           // StartCoroutine(detenerElTiempo());
+        }
+       
+    }
+
+    IEnumerator detenerElTiempo()
+    {
+        yield return new WaitForSeconds(2f);
+        
+        
+    }
+
+    public void health0()
+    {
+        pantallaMuerte.SetActive(true);
+        Time.timeScale = 0f;
     }
 }

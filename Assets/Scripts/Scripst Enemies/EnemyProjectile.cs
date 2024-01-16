@@ -15,10 +15,13 @@ public class EnemyProjectile : MonoBehaviour
 
 
     public float TimeShootDestroy;
+
+    public AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
         ShootCoolDown = timeToShoot;
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -37,7 +40,7 @@ public class EnemyProjectile : MonoBehaviour
 
         if (watcher)
         {
-            gameObject.GetComponent<PlayerDetect>();
+            gameObject.GetComponentInChildren<PlayerDetect>();
         }
     }
 
@@ -46,7 +49,7 @@ public class EnemyProjectile : MonoBehaviour
     public void Shoot()
     {
         GameObject balaenemigo = Instantiate(projectile, transform.position, Quaternion.identity);
-
+        audioSource.PlayOneShot(audioSource.clip);
         if (transform.localScale.x < 0f)
         {
             balaenemigo.GetComponent<Rigidbody2D>().AddForce(new Vector2(500f, 0f), ForceMode2D.Force);

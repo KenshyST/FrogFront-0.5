@@ -66,13 +66,11 @@ public class EspinaCayendo : MonoBehaviour
                 
                     actualizar = Time.time + 1.5f;
                     }
-                }
+                } 
                  
 
             }
-            
-               
-            
+ 
         
         }
     

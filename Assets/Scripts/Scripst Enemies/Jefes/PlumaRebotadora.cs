@@ -7,12 +7,17 @@ public class PlumaRebotadora : MonoBehaviour
     Rigidbody2D rb;
     Vector3 LastVelocity;
 
+    public bool destruirAlAparecer = true;
+
     Collider2D miCollider;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        Destroy(gameObject, 8f);
+        if(destruirAlAparecer){
+            Destroy(gameObject, 8f);
+        }
+        
 
         miCollider = GetComponent<Collider2D>();
 

@@ -15,6 +15,14 @@ public class DisparadorRecto : MonoBehaviour
 
     public float siguienteDisparo;
 
+    public AudioSource audioSource;
+
+    
+
+    void Start() {
+        audioSource = GetComponent<AudioSource>();
+    }
+
 
     void Update()
     {
@@ -28,14 +36,14 @@ public class DisparadorRecto : MonoBehaviour
         float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
 
         // Rota el objeto del disparador hacia el jugador
-        transform.rotation = Quaternion.Euler(0f, 0f, angulo - 90f);
+        transform.rotation = Quaternion.Euler(0f, 0f, angulo);
 
         // Cada x tiempo
         if (GeometryUtility.TestPlanesAABB(planosDeCorte, this.GetComponent<Renderer>().bounds))
         {
             if(Time.time >= siguienteDisparo){
             GameObject proyectil = Instantiate(proyectilPrefab, canon.transform.position, Quaternion.identity) as GameObject;
-
+            audioSource.PlayOneShot(audioSource.clip);
             // Le aplica una fuerza para que se dispare en la dirección calculada
             Rigidbody2D rb = proyectil.GetComponent<Rigidbody2D>();
             rb.AddForce(direccion * fuerzaDisparo, ForceMode2D.Impulse);

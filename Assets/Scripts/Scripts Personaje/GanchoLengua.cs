@@ -25,6 +25,8 @@ public class GanchoLengua : MonoBehaviour
     private float cdLengua = 3f;
     private float cdLenguaActual = 0.0f;
 
+    private audioManagement audioManagement;
+
 
     
     // Start is called before the first frame update
@@ -32,7 +34,7 @@ public class GanchoLengua : MonoBehaviour
     {
         
         CapaEnganche = LayerMask.GetMask("Gancheable");   
-        
+        audioManagement = FindObjectOfType<audioManagement>();
         gravedad = personajeRigidbody.gravityScale;
     }
 
@@ -43,7 +45,7 @@ public class GanchoLengua : MonoBehaviour
         
         if (Time.time > tiempoUltimoEnganche + tiempoReutilizacion && Input.GetMouseButtonDown(1)){
             Vector2 posicionMouse = (Vector2) mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, posicionMouse - (Vector2)transform.position, 100f, CapaEnganche);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, posicionMouse - (Vector2)transform.position, 7.5f, CapaEnganche);
            if (hit.collider != null){
                 Vector2 direccionLengua = (hit.point - (Vector2)transform.position).normalized;
 
@@ -56,6 +58,7 @@ public class GanchoLengua : MonoBehaviour
                 //UnionGancho.connectedBody = hit.collider.attachedRigidbody;
                 //UnionGancho.connectedAnchor = hit.point - (Vector2)hit.collider.transform.position;
                 DisparoCuerda.enabled = true;
+                audioManagement.seleccionAudio(4, 0.3f);
                 tiempoUltimoEnganche = Time.time;
                 Invoke("DesactivarCuerda", 0.15f);
                 cdLenguaActual = 0.0f;

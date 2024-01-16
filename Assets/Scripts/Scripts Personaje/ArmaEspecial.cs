@@ -38,6 +38,11 @@ public class ArmaEspecial : MonoBehaviour
 
     public int cantidadBalasDesactivar;
 
+    public GameObject AK_47;
+
+    private audioManagement audioManagement;
+
+    
     
 
     // Start is called before the first frame update
@@ -45,6 +50,7 @@ public class ArmaEspecial : MonoBehaviour
     {
         MovimientoPersonaje = GetComponent<MovimientoPersonaje>();
         MovimientoPersonaje = FindObjectOfType<MovimientoPersonaje>();
+        audioManagement = FindObjectOfType<audioManagement>();
     }
 
     // Update is called once per frame
@@ -53,6 +59,8 @@ public class ArmaEspecial : MonoBehaviour
         if(cantidadBalasDesactivar <= contadorBalasDesactivar){
             gameObject.SetActive(false);
             contadorBalasDesactivar = 0;
+            audioManagement.seleccionAudio(18, 0.2f);
+            AK_47.SetActive(true);
         }
         
         Pivote.transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -98,7 +106,7 @@ public class ArmaEspecial : MonoBehaviour
     }
     void Disparo_Pium_Pium(){
         if (Time.time >= tiempoEntreDisparos){
-        
+        audioManagement.seleccionAudio(1, 0.3f);
         GameObject proyectilInstanciado = Instantiate (Proyectil, Arma.position, transform.rotation) as GameObject;
         targetRotation.z = 0;
         objetivo = (targetRotation - transform.position).normalized;
@@ -113,6 +121,7 @@ public class ArmaEspecial : MonoBehaviour
     void DisparoRafaga(){
         if (Time.time >= nextFireTime){
         GameObject proyectilInstanciado = Instantiate (Proyectil, Arma.position, transform.rotation) as GameObject;
+         audioManagement.seleccionAudio(1, 0.3f);
         var angle = Mathf.Atan2(targetRotation.y, targetRotation.x) * Mathf.Rad2Deg;
         targetRotation.z = 0;
         Vector2 dispersionVector = Quaternion.AngleAxis(Random.Range(-dispersion, dispersion), Vector3.forward) * objetivo;

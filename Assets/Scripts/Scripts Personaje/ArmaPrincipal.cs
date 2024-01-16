@@ -23,19 +23,19 @@ public class ArmaPrincipal : MonoBehaviour
 
     float tiempitoParaRafaga;
 
-    float tiempoUltimoDisparo;
-
-    public float tiempoEntreDisparos;
-
     private bool clickPresionado = false;
     public float fireRate = 0.05f;
     private float nextFireTime = 0f;
+    
+    private audioManagement audioManagement;
 
     // Start is called before the first frame update
     void Start()
     {
         MovimientoPersonaje = GetComponent<MovimientoPersonaje>();
         MovimientoPersonaje = FindObjectOfType<MovimientoPersonaje>();
+        audioManagement = FindObjectOfType<audioManagement>();
+        
     }
 
     // Update is called once per frame
@@ -62,6 +62,7 @@ public class ArmaPrincipal : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Mouse0)){
             
             Disparo_Pium_Pium();
+            
         }
             
 
@@ -87,21 +88,31 @@ public class ArmaPrincipal : MonoBehaviour
         
         
         GameObject proyectilInstanciado = Instantiate (Proyectil, Arma.position, transform.rotation) as GameObject;
+        proyectilInstanciado.transform.Rotate(0f, 0f, 90f);
         targetRotation.z = 0;
-        objetivo = (targetRotation - transform.position).normalized;
-        proyectilInstanciado.GetComponent<Rigidbody2D>().AddForce(objetivo * velocidadProyectil, ForceMode2D.Impulse);
-        
-    
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = 0f; // Ajusta la distancia de la cámara al plano del juego si es necesario
+        Vector3 targetPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        objetivo = (targetPosition - transform.position);
+
+        Rigidbody2D rbProyectil = proyectilInstanciado.GetComponent<Rigidbody2D>();
+        rbProyectil.velocity = objetivo * velocidadProyectil;
+        audioManagement.seleccionAudio(1, 0.15f);
         
     }
 
     void DisparoRafaga(){
         if (Time.time >= nextFireTime){
+        audioManagement.seleccionAudio(1, 0.15f);
         GameObject proyectilInstanciado = Instantiate (Proyectil, Arma.position, transform.rotation) as GameObject;
+        proyectilInstanciado.transform.Rotate(0f, 0f, 90f);
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = 0f; // Ajusta la distancia de la cámara al plano del juego si es necesario
+        Vector3 targetPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         var angle = Mathf.Atan2(targetRotation.y, targetRotation.x) * Mathf.Rad2Deg;
         targetRotation.z = 0;
         Vector2 dispersionVector = Quaternion.AngleAxis(Random.Range(-dispersion, dispersion), Vector3.forward) * objetivo;
-        objetivo = (targetRotation - transform.position).normalized;
+        objetivo = (targetPosition - transform.position);
         proyectilInstanciado.GetComponent<Rigidbody2D>().AddForce(dispersionVector * velocidadProyectil, ForceMode2D.Impulse);
         nextFireTime = Time.time + fireRate;
         }

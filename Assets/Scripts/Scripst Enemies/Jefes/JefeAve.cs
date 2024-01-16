@@ -26,6 +26,8 @@ public class JefeAve : MonoBehaviour
 
     private bool realizandoAtaqueEspecial = false;
 
+    private audioManagement audioManagement;
+
 
     //<--------------Ataque Bomba ----------------------->//
 
@@ -75,12 +77,16 @@ public class JefeAve : MonoBehaviour
     public GameObject[] puntosInvocacion;
 
     public GameObject SawBlade;
+    public float fireRate = 0.7f;
+
+    private float nextFireTime = 0f;
 
 
     void Start()
     {
         siguientePunto = Random.Range(0, 8);
         velocidadInicial = velocidad;
+        audioManagement = FindObjectOfType<audioManagement>();
     }
     private void Update()
     {
@@ -96,6 +102,10 @@ public class JefeAve : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Time.time >= nextFireTime){
+                audioManagement.seleccionAudio(20, 0.1f);
+                nextFireTime = Time.time + fireRate;
+        }
 
         if (realizandoAtaqueEspecial == false || (realizandoAtaqueEspecial == true && realizandoTacleada == true))
         {
@@ -113,6 +123,7 @@ public class JefeAve : MonoBehaviour
         {
             CrearIconoCrosshair(jugador.transform.position);
             StartCoroutine(ReducirVelocidadJefe(2));
+            audioManagement.seleccionAudio(2, 0.2f);
             for (float i = 0; i < 65; i++)
             {
                 StartCoroutine(DispararConDelay(i / 50));
@@ -202,7 +213,7 @@ public class JefeAve : MonoBehaviour
 
     void PatronesAtaques()
     {
-
+        audioManagement.seleccionAudio(21, 0.1f);
         int IndexPatron = Random.Range(0, 3); // Número de patrones de ataque disponibles
         if (IndexPatron == 0)
         {
@@ -264,7 +275,7 @@ public class JefeAve : MonoBehaviour
 
     void PatronesDisparosEspeciales()
     {
-
+        audioManagement.seleccionAudio(22, 0.2f);
         int IndexPatron = Random.Range(0,4); // Número de patrones de ataque disponibles
         if (IndexPatron == 0)
         {
@@ -326,6 +337,7 @@ public class JefeAve : MonoBehaviour
     {
         
         // Seleccionamos un punto de disparo aleatorio
+        
         int puntoSeleccionado = Random.Range(0, puntosDisparo.Length);
 
         // Creamos una instancia de la bala en el punto de disparo
@@ -367,6 +379,7 @@ public class JefeAve : MonoBehaviour
 
     IEnumerator DispararConDelay(float delay)
     {
+        
         yield return new WaitForSeconds(delay);
         disparoNormal();
         
