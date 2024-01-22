@@ -373,6 +373,8 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
+"Assets/Assets/Todo el menu principal/Codigo/MainMenu.cs"
+"Assets/Assets/Todo el menu principal/Codigo/MenuPrincipal.cs"
 "Assets/Audios/audioManagement.cs"
 "Assets/balaEnemiga.cs"
 "Assets/DropearCosas.cs"
@@ -427,8 +429,6 @@
 "Assets/Scripts/UI/ArmaActual.cs"
 "Assets/Scripts/UI/LogicaCorazones.cs"
 "Assets/Scripts/zonaPelea.cs"
-"Assets/Todo el menu principal/Codigo/MainMenu.cs"
-"Assets/Todo el menu principal/Codigo/MenuPrincipal.cs"
 -langversion:9.0
 
 /deterministic
